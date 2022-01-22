@@ -12,7 +12,7 @@ echo "==========================================================================
 
 # CHECK THE TIRES BEFORE OUR ADVENTURES
 echo -e "\n[PRE-TASK] Obtaining and processing the partner domains from /etc/squid/squid.conf..."
-squidconfpath=squid.conf # WE CAN SIMPLE CHANGE THIS FOR DEBUGGING
+squidconfpath=/etc/squid/squid.conf # WE CAN SIMPLE CHANGE THIS FOR DEBUGGING
 if [ ! -f "$squidconfpath" ]; then
     echo "✗ File ${squidconfpath} not found on your machine!"
     echo "exitting..."
@@ -89,7 +89,7 @@ duration=$(( 10*(t2-t1) ))
 
 # CHECK THE CARBURATOR
 echo -e "\n[TASK] Checking the /etc/hosts path..."
-hostspath=hosts # WE CAN SIMPLE CHANGE THIS FOR DEBUGGING
+hostspath=/etc/hosts # WE CAN SIMPLE CHANGE THIS FOR DEBUGGING
 if [ ! -f "$hostspath" ]; then
     echo "✗ File ${hostspath} not found on your machine!"
     echo "exitting..."
