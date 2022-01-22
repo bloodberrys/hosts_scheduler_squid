@@ -12,7 +12,7 @@ echo "==========================================================================
 
 # CHECK THE TIRES BEFORE OUR ADVENTURES
 echo -e "\n[PRE-TASK] Obtaining and processing the partner domains from /etc/squid/squid.conf..."
-squidconfpath=/etc/squid/squid.conf # WE CAN SIMPLE CHANGE THIS FOR DEBUGGING
+squidconfpath=/etc/squid/squid.conf # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
 if [ ! -f "$squidconfpath" ]; then
     echo "✗ File ${squidconfpath} not found on your machine!"
     echo "exitting..."
@@ -46,7 +46,7 @@ echo -e "\n[WARM-UP] The script is about to start...\n"
 date_start=$(date)
 read up rest </proc/uptime; t1="${up%.*}${up#*.}"
 
-# START TO DIG DIVE INTO THE OCEAN, READ OCEAN OR BLUE OCEAN?
+# START TO DIG DIVE INTO THE OCEAN, RED OCEAN OR BLUE OCEAN?
 echo -e "\n[MAIN-TASK] Resolving the hostnames..."
 for (( i = 0; i < $endpointlength; i++))
 do
@@ -89,7 +89,7 @@ duration=$(( 10*(t2-t1) ))
 
 # CHECK THE CARBURATOR
 echo -e "\n[TASK] Checking the /etc/hosts path..."
-hostspath=/etc/hosts # WE CAN SIMPLE CHANGE THIS FOR DEBUGGING
+hostspath=/etc/hosts # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
 if [ ! -f "$hostspath" ]; then
     echo "✗ File ${hostspath} not found on your machine!"
     echo "exitting..."
