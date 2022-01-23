@@ -120,12 +120,12 @@ echo -e "\n[TASK] Replacing ip and hostname in /etc/hosts..."
 # SELECT ALL FLAG AND ALSO THE CONTENT INSIDE IT (IP HOSTNAME WITH HYPENS, DOT, NUMBERS, SEPARATED BY SPACE AND NEW LINE)
 pattern2="[#]+[\ ]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+[0-9\.\na-zA-Z\.\r\ -]*[#]+[\ END]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+"
 sed -i -Ez "s/$pattern2/# SCHEDULER FLAG #\n${lists}# END SCHEDULER FLAG #/g" ${hostspath}
-echo -e "\n[MISSION ACCOMPLISHED] IP and hostname in /etc/hosts is completely replaced..."
 
 # LOG THE /etc/hosts
 echo -e "\n\n[POST-CHECKING] Print the /etc/hosts RESULT...\n"
 cat ${hostspath}
 echo -e "\n\n"
+echo -e "\n[MISSION ACCOMPLISHED] IP and hostname in /etc/hosts is completely replaced."
 
 # LOGGING PURPOSE
 echo ".========================================================."
