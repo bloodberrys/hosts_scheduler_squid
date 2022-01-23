@@ -63,6 +63,7 @@ do
 
         # FILTER THE RESULT, SO THAT WE CAN ONLY OBTAIN THE IP ADDRESS 
         # AND PREVENTING ANOHER ALIAS
+        echo ${ips[$j]}
         ip=$(echo ${ips[$j]} | grep -oE '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b')
 
         # ASSIGN TO THE LISTS
