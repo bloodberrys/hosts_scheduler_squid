@@ -108,11 +108,11 @@ fi
 echo -e "\n[TASK] Checking the ${hostspath}, whether the file has a SCHEDULER FLAG to assign the ip and hostname..."
 SCHEDULERFLAG=$(cat ${hostspath} | grep -Pzo "# SCHEDULER FLAG #(.|\n)*\# END SCHEDULER FLAG #" | tr '\n' ' ')
 
-echo "found" "$SCHEDULERFLAG"
 
 # SELECT ONLY THE PATTERN
 pattern="[#]+[\ END]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+"
 if [[ "$SCHEDULERFLAG" =~ $pattern ]]; then
+    echo "Found" "$SCHEDULERFLAG"
     echo "✓ File ${hostspath} has the requirement flag, continue to the next task..."
 else
     echo "✗ File ${hostspath} on your machine doesn't has the requirement flag to assign IP and Hostname with this script!"
