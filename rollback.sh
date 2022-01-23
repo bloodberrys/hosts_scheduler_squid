@@ -1,3 +1,4 @@
+#!/bin/bash
 # CHECK THE CARBURATOR
 echo -e "Rolling back and remove the ip and hostname inside the SCHEDULER FLAG...\n"
 echo -e "\n[TASK] Checking the /etc/hosts path..."
@@ -13,11 +14,11 @@ fi
 echo -e "\n[TASK] Checking the ${hostspath}, whether the file has a SCHEDULER FLAG to assign the ip and hostname..."
 SCHEDULERFLAG=$(cat ${hostspath} | grep -Pzo "# SCHEDULER FLAG #(.|\n)*\# END SCHEDULER FLAG #" | tr '\n' ' ')
 
-echo "found" "$SCHEDULERFLAG"
 
 # SELECT ONLY THE PATTERN
 pattern="[#]+[\ END]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+"
 if [[ "$SCHEDULERFLAG" =~ $pattern ]]; then
+    echo "Found" "$SCHEDULERFLAG"
     echo "✓ File ${hostspath} has the requirement flag, continue to the next task..."
 else
     echo "✗ File ${hostspath} on your machine doesn't has the requirement flag to assign IP and Hostname with this script!"
@@ -30,5 +31,9 @@ fi
 echo -e "\n[TASK] Revert to null ip and hostname in /etc/hosts..."
 # SELECT ALL FLAG AND ALSO THE CONTENT INSIDE IT (IP HOSTNAME WITH HYPENS, DOT, NUMBERS, SEPARATED BY SPACE AND NEW LINE)
 pattern2="[#]+[\ ]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+[0-9\.\na-zA-Z\.\r\ -]*[#]+[\ END]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+"
-sed -i -Ez "s/$pattern2/# SCHEDULER FLAG #\n# END SCHEDULER FLAG #/g" ${hostspath}
-echo -e "\n[COMPLETED] Revert to null ip and hostname in /etc/hosts is completed."
+sudo sed -i -Ez "s/$pattern2/# SCHEDULER FLAG #\n# END SCHEDULER FLAG #/g" ${hostspath} && { is_sed_success=1; echo "Replace completed"; } || { is_sed_success=0; echo -e "Replace failed...\nexitting"; exit 1; }
+cat ${hostspath}
+echo -e "\n\n"
+if [ $is_sed_success -eq 1 ]; then
+    echo -e "\n[COMPLETED] All the IP and hostname in /etc/hosts is removed completely."
+fi

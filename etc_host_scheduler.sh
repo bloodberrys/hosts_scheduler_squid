@@ -11,7 +11,7 @@ echo "==========================================================================
 
 # CHECK THE TIRES BEFORE OUR ADVENTURES
 echo -e "\n[PRE-TASK] Obtaining and processing the partner domains from /etc/squid/squid.conf..."
-squidconfpath=squid.conf # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
+squidconfpath=/etc/squid/squid.conf # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
 if [ ! -f "$squidconfpath" ]; then
     echo "✗ File ${squidconfpath} not found on your machine!"
     echo "exitting..."
@@ -96,7 +96,7 @@ duration=$(( 10*(t2-t1) ))
 
 # CHECK THE CARBURATOR
 echo -e "\n[TASK] Checking the /etc/hosts path..."
-hostspath=hosts # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
+hostspath=/etc/hosts # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
 if [ ! -f "$hostspath" ]; then
     echo "✗ File ${hostspath} not found on your machine!"
     echo "exitting..."
@@ -125,7 +125,7 @@ fi
 echo -e "\n[TASK] Replacing ip and hostname in /etc/hosts..."
 # SELECT ALL FLAG AND ALSO THE CONTENT INSIDE IT (IP HOSTNAME WITH HYPENS, DOT, NUMBERS, SEPARATED BY SPACE AND NEW LINE)
 pattern2="[#]+[\ ]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+[0-9\.\na-zA-Z\.\r\ -]*[#]+[\ END]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+"
-sed -i -Ez "s/$pattern2/# SCHEDULER FLAG #\n${lists}# END SCHEDULER FLAG #/g" ${hostspath} && { is_sed_success=1; echo "Replace completed"; } || { is_sed_success=0; echo -e "Replace failed...\nexitting"; exit 1; }
+sudo sed -i -Ez "s/$pattern2/# SCHEDULER FLAG #\n${lists}# END SCHEDULER FLAG #/g" ${hostspath} && { is_sed_success=1; echo "Replace completed"; } || { is_sed_success=0; echo -e "Replace failed...\nexitting"; exit 1; }
 
 # LOG THE /etc/hosts
 echo -e "\n\n[POST-CHECKING] Print the /etc/hosts RESULT...\n"
