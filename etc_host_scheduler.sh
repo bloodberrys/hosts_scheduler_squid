@@ -9,10 +9,9 @@ echo "SOME MODIFICATION ON THIS SCRIPT WILL BE GRANTED IF YOU HAVE A PERMISSION 
 echo "FROM THE MAINTAINER, REST ASSURED THIS WILL FIX THE SQUID 503 ANNOYING FLAWS"
 echo "============================================================================"
 
-
 # CHECK THE TIRES BEFORE OUR ADVENTURES
 echo -e "\n[PRE-TASK] Obtaining and processing the partner domains from /etc/squid/squid.conf..."
-squidconfpath=/etc/squid/squid.conf # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
+squidconfpath=squid.conf # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
 if [ ! -f "$squidconfpath" ]; then
     echo "✗ File ${squidconfpath} not found on your machine!"
     echo "exitting..."
@@ -22,12 +21,12 @@ else
 fi
 
 # GATHER PARTNER HOSTNAME IN /etc/squid/squid.conf AS SOURCE OF TRUTH
-# THIS ACTION WILL ENSURE THAT WE HAVE THE CONSISTENT PARTNER LIST
+# THIS ACTION WILL ENSURE THAT WE HAVE THE CONSISTENT PARTNER LISTS
 # THE OUTPUT WILL BE SEPARATED BY SPACE
 PARTNER_ENDPOINTS=$(cat ${squidconfpath} | grep -Po 'acl paypartner-dstdomain dstdomain [^\s]*' | awk '{sub(/acl paypartner-dstdomain dstdomain /,"")}1' | tr '\n' ' ')
 
 # ASSIGN THE PARTNERS TO "endpoint" ARRAY
-endpoint=(${PARTNER_ENDPOINTS})
+IFS=" " read -r -a endpoint <<< "$PARTNER_ENDPOINTS"
 
 # GET THE ARRAY ELEMENTS LENGTH
 endpointlength=${#endpoint[@]}
@@ -44,45 +43,52 @@ echo -e "\n[WARM-UP] The script is about to start...\n"
 
 # JUST IN CASE WE NEED THE EXECUTION TIME, OR TIMESTAMP AS ALWAYS
 date_start=$(date)
-read up rest </proc/uptime; t1="${up%.*}${up#*.}"
+read -r up rest </proc/uptime; t1="${up%.*}${up#*.}"
 
 # START TO DIG DIVE INTO THE OCEAN, RED OCEAN OR BLUE OCEAN?
 echo -e "\n[MAIN-TASK] Resolving the hostnames..."
-for (( i = 0; i < $endpointlength; i++))
+for (( i = 0; i < endpointlength; i++))
 do
     # FIND WITH DIG WHICH HOSTNAME IS ACTUALLY DOESN'T HAVE AN A RECORD
-    dig ${endpoint[$i]} A | grep NOERROR 1>/dev/null && { hostname_success_counter=$((${hostname_success_counter}+1)); } || { echo "[WARNING] Hostname doesn't have an A record (SOA/NXDOMAIN): ${endpoint[$i]}"; 
-    hostname_failed_counter=$(($hostname_failed_counter+1)); failed_lists+=$(echo "${hostname_failed_counter}. ${endpoint[$i]}\n"); }
+    cmd1="dig ${endpoint[$i]} A"
+    cmd2="grep NOERROR"
+    go=$(eval "$cmd1" | eval "$cmd2")
+    if [[ -n "$go" ]]; then
+        hostname_success_counter=$((hostname_success_counter+1));
+    else
+        echo "[WARNING] Hostname doesn't have an A record (SOA/NXDOMAIN): ${endpoint[$i]}";
+        hostname_failed_counter=$((hostname_failed_counter+1)); failed_lists+="${hostname_failed_counter}. ${endpoint[$i]}\n";
+    fi
 
-    # RESOLVE THE HOSTNAME IPS
-    ips=($(dig +short ${endpoint[$i]}))
+    # RESOLVE THE HOSTNAME'S IPS
+    mapfile -t ips < <(dig +short "${endpoint[$i]}")
 
     for (( j = 0; j < ${#ips[@]}; j++))
     do
-        known_dns_counter=$((${known_dns_counter}+1))
+        known_dns_counter=$((known_dns_counter+1))
 
-        # FILTER THE RESULT, SO THAT WE CAN ONLY OBTAIN THE IP ADDRESS 
+        # FILTER THE RESULT, SO THAT WE CAN ONLY OBTAIN THE IP ADDRESS
         # AND PREVENTING ANOHER ALIAS
-        echo ${ips[$j]}
-        ip=$(echo ${ips[$j]} | grep -oE '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b')
+        echo "${ips[$j]}"
+        ip=$(echo "${ips[$j]}" | grep -oE '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b')
 
         # ASSIGN TO THE LISTS
-        if [[ ! -z "$ip" ]]; then
+        if [[ -n "$ip" ]]; then
             # (DEBUGGING PURPOSE ONLY)
             # UNCOMMENT THE LINE BELOW TO PRINT THE IPS AND PARTNER HOSTNAMES#
             # echo "${ip}" "${endpoint[$i]}"
-            
+
             # GENERATE A SUCCESS HOSTNAME WITH \n
-            lists+=$(echo "${ip}" "${endpoint[$i]}\n")
-            total_resolved_ips=$((${total_resolved_ips}+1))
+            lists+="${ip} ${endpoint[$i]}\n"
+            total_resolved_ips=$((total_resolved_ips+1))
         else
             # HOSTNAME THAT HAS CNAME RECORD
-            total_cname=$((${total_cname}+1))
+            total_cname=$((total_cname+1))
         fi
     done
 done
 date_end=$(date)
-read up rest </proc/uptime; t2="${up%.*}${up#*.}"
+read -r up rest </proc/uptime; t2="${up%.*}${up#*.}"
 duration=$(( 10*(t2-t1) ))
 
 # JUST IN CASE NEED DEBUG, UNCOMMENT THE PART BELOW
@@ -90,7 +96,7 @@ duration=$(( 10*(t2-t1) ))
 
 # CHECK THE CARBURATOR
 echo -e "\n[TASK] Checking the /etc/hosts path..."
-hostspath=/etc/hosts # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
+hostspath=hosts # WE CAN SIMPLY CHANGE THIS FOR DEBUGGING
 if [ ! -f "$hostspath" ]; then
     echo "✗ File ${hostspath} not found on your machine!"
     echo "exitting..."
@@ -119,13 +125,15 @@ fi
 echo -e "\n[TASK] Replacing ip and hostname in /etc/hosts..."
 # SELECT ALL FLAG AND ALSO THE CONTENT INSIDE IT (IP HOSTNAME WITH HYPENS, DOT, NUMBERS, SEPARATED BY SPACE AND NEW LINE)
 pattern2="[#]+[\ ]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+[0-9\.\na-zA-Z\.\r\ -]*[#]+[\ END]+[SCHEDULER]+[\ ]+[FLAG]+[\ ]+[#]+"
-sed -i -Ez "s/$pattern2/# SCHEDULER FLAG #\n${lists}# END SCHEDULER FLAG #/g" ${hostspath}
+sed -i -Ez "s/$pattern2/# SCHEDULER FLAG #\n${lists}# END SCHEDULER FLAG #/g" ${hostspath} && { is_sed_success=1; echo "Replace completed"; } || { is_sed_success=0; echo -e "Replace failed...\nexitting"; exit 1; }
 
 # LOG THE /etc/hosts
 echo -e "\n\n[POST-CHECKING] Print the /etc/hosts RESULT...\n"
 cat ${hostspath}
 echo -e "\n\n"
-echo -e "\n[MISSION ACCOMPLISHED] IP and hostname in /etc/hosts is completely replaced."
+if [ $is_sed_success -eq 1 ]; then
+    echo -e "\n[MISSION ACCOMPLISHED] IP and hostname in /etc/hosts is completely replaced."
+fi
 
 # LOGGING PURPOSE
 echo ".========================================================."
@@ -138,7 +146,7 @@ echo ".========================================================."
 echo "|=========================STATS==========================|"
 echo "'========================================================'"
 echo "OY's total partner hostname: ${endpointlength}/${endpointlength}"
-echo -e "Total DNS RECORD found based on available hostname: $((${known_dns_counter}+${hostname_failed_counter}))\n"
+echo -e "Total DNS RECORD found based on available hostname: $((known_dns_counter+hostname_failed_counter))\n"
 echo "✓ Hostnames resolved Successfully (NOERROR): ${hostname_success_counter}/${endpointlength}"
 echo "✓ The amount of IPs (A Record) whose hostname can be resolved: ${total_resolved_ips}"
 echo "⚠ Hostnames which has CNAME record: ${total_cname}"
