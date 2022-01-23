@@ -132,7 +132,7 @@ echo -e "\n\n[POST-CHECKING] Print the /etc/hosts RESULT...\n"
 cat ${hostspath}
 echo -e "\n\n"
 if [ $is_sed_success -eq 1 ]; then
-    echo -e "\n[MISSION ACCOMPLISHED] IP and hostname in /etc/hosts is completely replaced."
+    echo -e "[MISSION ACCOMPLISHED] IP and hostname in /etc/hosts is completely replaced.\n"
 fi
 
 # LOGGING PURPOSE
