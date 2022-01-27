@@ -12,15 +12,18 @@ while true
 do
     value_store=$(dig +short $endpoint)
     lists=""
-    if [[ ! " ${ips_store[*]} " =~ " ${value_store} " && "$loopcounter" != 0 ]]; then
+    if [[ ! " ${ips_store[*]} " =~ " ${value_store} " ]]; then
         ips_store+=("${value_store}")
         length=${#ips_store[@]}
         for ((l = 0; l < length; l++))
         do
             lists+="${ips_store[$l]}\n"
         done
+
+        if [[ "$loopcounter" != 0 ]]; then
         echo -e "IP CHANGED to $value_store\nIP LISTS:\n$lists"
         echo -e "IP CHANGED to $value_store\nIP LISTS:\n$lists" >> result.log
+        fi
     fi
     for ((i = 0; i < ${#ips_store[@]}; i++))
     do
