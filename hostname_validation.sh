@@ -11,6 +11,7 @@ loopcounter=0
 while true
 do
     value_store=$(dig +short $endpoint)
+    lists=""
     if [[ ! " ${ips_store[*]} " =~ " ${value_store} " ]]; then
         ips_store+=("${value_store}")
         length=${#ips_store[@]}
