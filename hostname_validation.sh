@@ -5,14 +5,14 @@ echo -e "This script is created to test whether the hostname and IP is seamless 
 IFS=" " read -r -a ips_store <<< ""
 
 endpoint="api.bni-ecollection.com"
-
+echo -e "HOSTNAME: $endpoint"
 counter=1
 loopcounter=0
 while true
 do
     value_store=$(dig +short $endpoint)
     lists=""
-    if [[ ! " ${ips_store[*]} " =~ " ${value_store} " ]]; then
+    if [[ ! " ${ips_store[*]} " =~ " ${value_store} " && "$loopcounter" != 0 ]]; then
         ips_store+=("${value_store}")
         length=${#ips_store[@]}
         for ((l = 0; l < length; l++))
