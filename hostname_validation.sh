@@ -6,7 +6,7 @@ mkdir -p results
 mkdir -p ip_target
 IFS=" " read -r -a ips_store <<< ""
 
-endpoint="api.bni-ecollection.com api.bni.co.id dev.bni-ecollection.com apidev.bni.co.id aping-ideal.dbs.com aping.dbs.id apingid.wlb.dbs.id api.btpn.com api-mt.thunes.com api.danamon.co.id api.mailgun.net"
+endpoint="api-mt.thunes.com api.bni-ecollection.com api.bni.co.id dev.bni-ecollection.com apidev.bni.co.id api.danamon.co.id aping-ideal.dbs.com aping.dbs.id"
 IFS=" " read -r -a endpoint <<< "$endpoint"
 endpointlength=${#endpoint[@]}
 for ((counter = 0; counter < endpointlength; counter++))
@@ -28,7 +28,8 @@ do
     echo -e "HOSTNAME: ${endpoint[$counter]}" >> results/$logname
 
     loopcounter=0
-    while [ $loopcounter -lt 10 ]
+    timeoutcounter=0
+    while [ $loopcounter -lt 1000 ]
     do
         # Filter and map hostname's ips
         mapfile -t value_store < <(dig +short "${endpoint[$counter]}" | grep -oE '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b')
@@ -59,6 +60,7 @@ do
                 else
                 echo "[$(date)] ${ips_store[$i]} timeout"
                 echo "[$(date)] ${ips_store[$i]} timeout" >> results/$logname
+                timeoutcounter=$((timeoutcounter+1))
                 fi
             done
         else
@@ -84,6 +86,9 @@ do
             xargs -P 1 -n 1 -I@ bash -c "curl -sI https://@ --insecure -m 2 | grep -Po \"[0-9]{2,3}+\" | head -n 1 && echo \"[$(date)] @ \" >> results/$logname" < ip_target/ip_target_"${endpoint[$counter]}".txt >> results/$logname
         fi
         ((loopcounter=loopcounter+1))
+        if [[ "$timeoutcounter" -gt 10 ]]; then
+            break;
+        fi
         sleep 0.5
     done
 done
