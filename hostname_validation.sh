@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -e "Script to test the hostname ip reliability. This script aims to research the old parner dynamic ip's reliability."
+echo -e "This script aims to examine the reliability of dynamic DNS of our partners. The main goal: to prove that the previous parner's IP is still reachable, even though it's not completely there when we search using the \"dig\" command."
 
 mkdir -p results
 mkdir -p ip_target
