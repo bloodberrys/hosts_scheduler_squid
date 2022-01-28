@@ -12,8 +12,8 @@ for ((counter = 0; counter < endpointlength; counter++))
 do
     # Log rotate for each endpoint
     logname="result.log"
-    if [ -f "$logname" ]; then
-        namerotator=$(ls $pwd | grep -Po "${logname}[\.0-9]*" | tail -n 1 | awk "{sub(/${logname}[\.]*/,\"\")}1")
+    if [ -f "results/$logname" ]; then
+        namerotator=$(ls $pwd/results | grep -Po "${logname}[\.0-9]*" | tail -n 1 | awk "{sub(/${logname}[\.]*/,\"\")}1")
         namerotator=$((namerotator+1))
         logname="$logname.$namerotator"
         echo $logname
@@ -24,7 +24,7 @@ do
     # Reset
     IFS=" " read -r -a ips_store <<< ""
     echo -e "HOSTNAME: ${endpoint[$counter]}"
-    echo -e "HOSTNAME: ${endpoint[$counter]}" >> $logname
+    echo -e "HOSTNAME: ${endpoint[$counter]}" >> results/$logname
 
     loopcounter=0
     while [ $loopcounter -lt 10 ]
@@ -45,7 +45,7 @@ do
 
                 if [[ "$loopcounter" != 0 ]]; then
                 echo -e "IP CHANGED to ${value_store[$ipcounter]}\nIP LISTS:\n$lists"
-                echo -e "IP CHANGED to ${value_store[$ipcounter]}\nIP LISTS:\n$lists" >> $logname
+                echo -e "IP CHANGED to ${value_store[$ipcounter]}\nIP LISTS:\n$lists" >> results/$logname
                 fi
             fi
         done
@@ -56,10 +56,10 @@ do
             status_code=$(curl -sI https://$ip --insecure -m 2 | grep -Po "[0-9]{2,3}+" | head -n 1)
             if [ -n "$status_code" ]; then
             echo "[$(date)] ${ips_store[$i]} timeout"
-            echo "[$(date)] ${ips_store[$i]} timeout" >> $logname
+            echo "[$(date)] ${ips_store[$i]} timeout" >> results/$logname
             else
             echo "[$(date)] ${ips_store[$i]} $status_code"
-            echo "[$(date)] ${ips_store[$i]} $status_code" >> $logname
+            echo "[$(date)] ${ips_store[$i]} $status_code" >> results/$logname
             fi
         done
         ((loopcounter=loopcounter+1))
