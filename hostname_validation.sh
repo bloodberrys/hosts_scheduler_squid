@@ -9,12 +9,13 @@ echo -e "HOSTNAME: $endpoint"
 counter=1
 loopcounter=0
 logname="result.log"
-if [ ! -f "$logname" ]; then
-    logname="result.log"
-else
-    namerotator=$(ls $pwd | grep -Po "${logname}[\.0-9]*" | tail -n 1 | awk "{sub(/${logname}./,\"\")}1")
+if [ -f "$logname" ]; then
+    namerotator=$(ls $pwd | grep -Po "${logname}[\.0-9]*" | tail -n 1 | awk "{sub(/${logname}[\.]*/,\"\")}1")
     namerotator=$((namerotator+1))
     logname="$logname.$namerotator"
+    echo $logname
+else
+    logname="result.log"
 fi
 while true
 do
