@@ -9,7 +9,7 @@ IFS=" " read -r -a endpoint <<< "$endpoint"
 endpointlength=${#endpoint[@]}
 for ((counter = 0; counter < endpointlength; counter++))
 do
-    echo -e "HOSTNAME: ${endpoint[@counter]}"
+    echo -e "HOSTNAME: ${endpoint[$counter]}"
 
     # Log rotate for each endpoint
     logname="result.log"
@@ -25,7 +25,7 @@ do
     loopcounter=0
     while [ $loopcounter -lt 10 ]
     do
-        value_store=$(dig +short "${endpoint[@counter]}")
+        value_store=$(dig +short "${endpoint[$counter]}")
         lists=""
         if [[ ! " ${ips_store[*]} " =~ " ${value_store} " ]]; then
             ips_store+=("${value_store}")
