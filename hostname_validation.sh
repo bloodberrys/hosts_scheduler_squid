@@ -4,7 +4,7 @@ echo -e "Script to test the hostname ip reliability."
 
 IFS=" " read -r -a ips_store <<< ""
 
-endpoint="api.bni-ecollection.com api.bni.co.id"
+endpoint="api.bni-ecollection.com api.bni.co.id dev.bni-ecollection.com apidev.bni.co.id aping-ideal.dbs.com aping.dbs.id apingid.wlb.dbs.id api.btpn.com api-mt.thunes.com api.danamon.co.id api.mailgun.net"
 IFS=" " read -r -a endpoint <<< "$endpoint"
 endpointlength=${#endpoint[@]}
 for ((counter = 0; counter < endpointlength; counter++))
