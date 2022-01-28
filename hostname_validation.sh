@@ -6,7 +6,7 @@ mkdir -p results
 mkdir -p ip_target
 IFS=" " read -r -a ips_store <<< ""
 
-endpoint="api.mailgun.net api.bni-ecollection.com api.bni.co.id dev.bni-ecollection.com apidev.bni.co.id aping-ideal.dbs.com aping.dbs.id apingid.wlb.dbs.id api.btpn.com api-mt.thunes.com api.danamon.co.id"
+endpoint="api.bni-ecollection.com api.bni.co.id dev.bni-ecollection.com apidev.bni.co.id aping-ideal.dbs.com aping.dbs.id apingid.wlb.dbs.id api.btpn.com api-mt.thunes.com api.danamon.co.id api.mailgun.net"
 IFS=" " read -r -a endpoint <<< "$endpoint"
 endpointlength=${#endpoint[@]}
 for ((counter = 0; counter < endpointlength; counter++))
