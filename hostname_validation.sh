@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -e "Script to test the hostname ip reliability."
+echo -e "Script to test the hostname ip reliability. This script aims to research the old parner dynamic ip's reliability."
 
 mkdir -p results
 mkdir -p ip_target
@@ -33,7 +33,7 @@ do
     counter3xx=0
     counter4xx=0
     counter5xx=0
-    while [ $loopcounter -lt 1000 ]
+    while [ $loopcounter -lt 200 ]
     do
         # Filter and map hostname's ips
         mapfile -t value_store < <(dig +short "${endpoint[$counter]}" | grep -oE '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b')
@@ -96,7 +96,7 @@ do
             # Save target ip to the file
             printf "%s\n" "${ips_store[@]}" > ip_target/ip_target_"${endpoint[$counter]}".txt
             # Parallel curl
-            xargs -P 1 -n 1 -I@ bash -c "curl -sI https://@ --insecure -m 2 | grep -Po \"[0-9]{2,3}+\" | head -n 1 && echo \"[$(date)] @ \" >> results/$logname" < ip_target/ip_target_"${endpoint[$counter]}".txt >> results/$logname
+            xargs -P 1 -n 1 -I@ bash -c "curl -sI https://@ --insecure -m 2 | grep -Po \"[0-9]{2,3}+\" | head -n 1 && echo \"[(date)] @ \" >> results/$logname" < ip_target/ip_target_"${endpoint[$counter]}".txt >> results/$logname
         fi
         ((loopcounter=loopcounter+1))
         if [[ "$timeoutcounter" -gt 10 || "$counter5xx" -gt 10 ]]; then
