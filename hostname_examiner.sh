@@ -96,7 +96,7 @@ do
             # Save target ip to the file
             printf "%s\n" "${ips_store[@]}" > ip_target/ip_target_"${endpoint[$counter]}".txt
             # Parallel curl
-            xargs -P 1 -n 1 -I@ bash -c "curl -sI https://@ --insecure -m 2 | grep -Po \"[0-9]{2,3}+\" | head -n 1 && echo \"[(date)] @ \" >> results/$logname" < ip_target/ip_target_"${endpoint[$counter]}".txt >> results/$logname
+            xargs -P 1 -n 1 -I@ bash -c "curl -sI https://@ --insecure -m 2 | grep -Po \"[0-9]{2,3}+\" | head -n 1 && echo \"[$(date)] @ \" >> results/$logname" < ip_target/ip_target_"${endpoint[$counter]}".txt >> results/$logname
         fi
         ((loopcounter=loopcounter+1))
         if [[ "$timeoutcounter" -gt 10 || "$counter5xx" -gt 10 ]]; then
