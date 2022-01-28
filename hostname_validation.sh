@@ -102,7 +102,7 @@ do
         if [[ "$timeoutcounter" -gt 10 || "$counter5xx" -gt 10 ]]; then
             break;
         fi
-        echo -e "Timeout: $timeoutcounter\n2XX: $counter2xx\n3XX: $counter3xx\n4XX: $counter4xx\n5XX: $counter5xx"
         sleep 0.5
     done
+        echo -e "Timeout: $timeoutcounter\n2XX: $counter2xx\n3XX: $counter3xx\n4XX: $counter4xx\n5XX: $counter5xx"
 done
