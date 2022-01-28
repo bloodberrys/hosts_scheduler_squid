@@ -8,6 +8,14 @@ endpoint="api.bni-ecollection.com"
 echo -e "HOSTNAME: $endpoint"
 counter=1
 loopcounter=0
+logname="result.log"
+if [ ! -f "$logname" ]; then
+    logname="result.log"
+else
+    namerotator=$(ls | grep -Po "${logname}[\.0-9]*" | tail -n 1 | awk "{sub(/${logname}./,'')}1")
+    namerotator=$((namerotator+1))
+    logname="$logname.$namerotator"
+fi
 while true
 do
     value_store=$(dig +short $endpoint)
@@ -22,7 +30,7 @@ do
 
         if [[ "$loopcounter" != 0 ]]; then
         echo -e "IP CHANGED to $value_store\nIP LISTS:\n$lists"
-        echo -e "IP CHANGED to $value_store\nIP LISTS:\n$lists" >> result.log
+        echo -e "IP CHANGED to $value_store\nIP LISTS:\n$lists" >> $logname
         fi
     fi
     for ((i = 0; i < ${#ips_store[@]}; i++))
@@ -30,7 +38,7 @@ do
         ip="${ips_store[$i]}"
         status_code=$(curl -sI https://$ip --insecure | grep -Po "[0-9]{2,3}+" | head -n 1)
         echo "[$(date)] ${ips_store[$i]} $status_code"
-        echo "[$(date)] ${ips_store[$i]} $status_code" >> result.log
+        echo "[$(date)] ${ips_store[$i]} $status_code" >> $logname
     done
 
     if [ "$counter" -eq 9 ];then
