@@ -9,8 +9,9 @@ IFS=" " read -r -a endpoint <<< "$endpoint"
 endpointlength=${#endpoint[@]}
 for ((counter = 0; counter < endpointlength; counter++))
 do
+    # Reset
+    IFS=" " read -r -a ips_store <<< ""
     echo -e "HOSTNAME: ${endpoint[$counter]}"
-
     # Log rotate for each endpoint
     logname="result.log"
     if [ -f "$logname" ]; then
