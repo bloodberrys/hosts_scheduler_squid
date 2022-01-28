@@ -46,7 +46,7 @@ do
         for ((i = 0; i < ${#ips_store[@]}; i++))
         do
             ip="${ips_store[$i]}"
-            status_code=$(curl -sI https://$ip --insecure | grep -Po "[0-9]{2,3}+" | head -n 1)
+            status_code=$(curl -sI https://$ip --insecure --connection-timeout 5 | grep -Po "[0-9]{2,3}+" | head -n 1)
             echo "[$(date)] ${ips_store[$i]} $status_code"
             echo "[$(date)] ${ips_store[$i]} $status_code" >> $logname
         done
