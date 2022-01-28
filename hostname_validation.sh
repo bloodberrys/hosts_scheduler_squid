@@ -55,12 +55,15 @@ do
                 ip="${ips_store[$i]}"
                 status_code=$(curl -sI https://$ip --insecure -m 2 | grep -Po "[0-9]{2,3}+" | head -n 1)
                 if [ -n "$status_code" ]; then
-                echo "[$(date)] ${ips_store[$i]} $status_code"
-                echo "[$(date)] ${ips_store[$i]} $status_code" >> results/$logname
+                    echo "[$(date)] ${ips_store[$i]} $status_code"
+                    echo "[$(date)] ${ips_store[$i]} $status_code" >> results/$logname
+                if [[ "$status_code" =~ [5][0][0-9] ]]; then
+                    timeoutcounter=$((timeoutcounter+1))
+                fi
                 else
-                echo "[$(date)] ${ips_store[$i]} timeout"
-                echo "[$(date)] ${ips_store[$i]} timeout" >> results/$logname
-                timeoutcounter=$((timeoutcounter+1))
+                    echo "[$(date)] ${ips_store[$i]} timeout"
+                    echo "[$(date)] ${ips_store[$i]} timeout" >> results/$logname
+                    timeoutcounter=$((timeoutcounter+1))
                 fi
             done
         else
