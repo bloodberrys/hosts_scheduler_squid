@@ -105,4 +105,5 @@ do
         sleep 0.5
     done
         echo -e "Timeout: $timeoutcounter\n2XX: $counter2xx\n3XX: $counter3xx\n4XX: $counter4xx\n5XX: $counter5xx"
+        echo -e "Timeout: $timeoutcounter\n2XX: $counter2xx\n3XX: $counter3xx\n4XX: $counter4xx\n5XX: $counter5xx" >> results/$logname
 done
