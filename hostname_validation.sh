@@ -25,7 +25,7 @@ do
     loopcounter=0
     while [ $loopcounter -lt 10 ]
     do
-        value_store=$(dig +short ${endpoint[@counter]})
+        value_store=$(dig +short "${endpoint[@counter]}")
         lists=""
         if [[ ! " ${ips_store[*]} " =~ " ${value_store} " ]]; then
             ips_store+=("${value_store}")
