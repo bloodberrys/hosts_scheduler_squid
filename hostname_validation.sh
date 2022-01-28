@@ -12,7 +12,7 @@ logname="result.log"
 if [ ! -f "$logname" ]; then
     logname="result.log"
 else
-    namerotator=$(ls | grep -Po "${logname}[\.0-9]*" | tail -n 1 | awk "{sub(/${logname}./,'')}1")
+    namerotator=$(ls $pwd | grep -Po "${logname}[\.0-9]*" | tail -n 1 | awk "{sub(/${logname}./,\"\")}1")
     namerotator=$((namerotator+1))
     logname="$logname.$namerotator"
 fi
